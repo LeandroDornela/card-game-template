@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using UnityEngine;
+
 namespace CardGameTemplate
 {
     // Yo-gi-oh card monster style with a attack and a defense.

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NaughtyAttributes;
 using UnityEngine;
 
 namespace CardGameTemplate
@@ -22,8 +23,7 @@ namespace CardGameTemplate
     /// </summary>
     public class CardGameManager : Singleton<CardGameManager> // World
     {
-        [SerializeField] private LocalCardGameDataManager defaultCardGameDataManager; // TODO: usar interface
-        [SerializeField] private SOControllerDefinitionsRegistry _controllerPrefabsDefinitions;
+        [SerializeField, Expandable] private CardGameConfig _cardGameConfig;
         
         private GameStateMachine _stateMachine;
         private CardGameController _cardGameController;
@@ -34,6 +34,8 @@ namespace CardGameTemplate
         private readonly Dictionary<Guid, Controller> _controllers = new Dictionary<Guid, Controller>();
         private readonly Dictionary<Guid, PlayerState> _states = new Dictionary<Guid, PlayerState>();
 
+        private int _handSlots = 5;
+
 
         public CardGameController CardGameController => _cardGameController;
         public MatchState MatchState => _matchState;
@@ -42,6 +44,8 @@ namespace CardGameTemplate
         public IReadOnlyDictionary<Guid, RuntimePlayerProfile> PlayerProfiles => _playerProfiles;
         public IReadOnlyDictionary<Guid, Controller> PlayerControllers => _controllers;
         public IReadOnlyDictionary<Guid, PlayerState> PlayerStates => _states;
+
+        public int HandSlots => _handSlots;
 
         public bool TryGetPlayerProfile(Guid guid, out RuntimePlayerProfile profile)
         {
@@ -93,6 +97,12 @@ namespace CardGameTemplate
 
         void Awake()
         {
+            if(!_cardGameConfig)
+            {
+                Debug.LogError(Debug.Category.Data, "Card Game Config is undefined.");
+                return;
+            }
+
             // Create the state machine, what will trigger the Initializing state by default.
             _stateMachine = new GameStateMachine(new Dictionary<InGameStateId, IGameState>
             {
@@ -107,6 +117,8 @@ namespace CardGameTemplate
             _matchState = new MatchState();
 
             _stateMachine.StartMachine(InGameStateId.Initializing);
+
+            _handSlots = _cardGameConfig.MaxCardsInHand;
         }
 
 
@@ -125,7 +137,7 @@ namespace CardGameTemplate
         public async void SetupPlayersContext(Action onFinished)
         {
             // Get match data.
-            var matchData = defaultCardGameDataManager.GetCardGameMatchData();
+            var matchData = _cardGameConfig.CardGameDataManager.GetCardGameMatchData();
             
 #if SIMULATE_NETWORK_DELAY
             // Simulate a network delay
@@ -169,14 +181,14 @@ namespace CardGameTemplate
                 return;
             }
 
-            if(_playerProfiles.TryGetValue(playerProfile.RuntimePlayerGuid, out var dummy))
+            if(_playerProfiles.TryGetValue(playerProfile.RuntimePlayerGuid, out _))
             {
                 Debug.LogError(Debug.Category.Data, $"Player already created. Guid: [{playerProfile.RuntimePlayerGuid}]");
                 return;
             }
 
             // Select the correct controller based on player type.
-            if(!_controllerPrefabsDefinitions.TryGetPrefab(playerProfile.PlayerType, out GameObject controllerPrefab))
+            if(!_cardGameConfig.ControllerPrefabsDefinitions.TryGetPrefab(playerProfile.PlayerType, out GameObject controllerPrefab))
             {
                 Debug.LogError(Debug.Category.Data, $"Invalid or unsupported Player Type: {playerProfile.PlayerType}");
                 return;

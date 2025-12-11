@@ -3,16 +3,16 @@ using UnityEngine;
 
 namespace CardGameTemplate
 {
-    [System.Serializable]
-    public class LocalCardGameDataManager : ICardGameDataManager
+    [CreateAssetMenu(fileName = "LocalCardGameDataManager", menuName = "Scriptable Objects/LocalCardGameDataManager")]
+    public class LocalCardGameDataManager : ScriptableObject, ICardGameDataManager
     {
+        // For local data, the player profiles are stored in scriptable objects. But it can be changed
+        // to any other way to store it.
         [SerializeField] private SOPlayerProfiles _playerProfiles;
 
-        public override ICardGameMatchData GetCardGameMatchData()
+        public ICardGameMatchData GetCardGameMatchData()
         {
-            _cardGameMatchData = new ICardGameMatchData(_playerProfiles.GetRuntimePlayerProfiles());
-
-            return _cardGameMatchData;
+            return new LocalMatchData(_playerProfiles.GetRuntimePlayerProfiles());
         }
     }
 }

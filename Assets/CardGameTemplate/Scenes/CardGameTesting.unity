@@ -285,9 +285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcadac4713aa5eb43b3f5721bfc9a509, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  defaultCardGameDataManager:
-    _playerProfiles: {fileID: 11400000, guid: 7b44c7fe3e0d8194fb2cba03fe4ebf40, type: 2}
-  _controllerPrefabsDefinitions: {fileID: 11400000, guid: 6210c22a410aeed4bbe1e28ab97e6f46, type: 2}
+  _cardGameConfig: {fileID: 11400000, guid: 8b2346adf765fd4418e7f42bc901cf38, type: 2}
 --- !u!4 &588252733
 Transform:
   m_ObjectHideFlags: 0
