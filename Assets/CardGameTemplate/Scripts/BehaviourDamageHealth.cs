@@ -30,7 +30,7 @@ namespace CardGameTemplate
                     continue;
                 }
 
-                if(playerState.ComponentHealth == null)
+                if(playerState.Health == null)
                 {
                     CardGameTemplate.Debug.LogError(Debug.Category.GameLogic, "Health Component is invalid.");
                     return false;
@@ -38,7 +38,7 @@ namespace CardGameTemplate
 
                 // At least one of the targets must be valid, a Player State.
                 // And receive the damage.
-                if(playerState.ComponentHealth.TakeDamage(_mainValue))
+                if(playerState.Health.SafeDecreaseValue(_mainValue))
                 {
                     success = true;
                 }

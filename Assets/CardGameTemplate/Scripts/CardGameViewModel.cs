@@ -68,11 +68,11 @@ namespace CardGameTemplate
 
             if(playerState.RuntimePlayerGuid == _ownerController.RuntimePlayerGuid)
             {
-                _playerHealth.SetText(playerState.ComponentHealth.Health.ToString());
+                _playerHealth.SetText(playerState.Health.Value.ToString());
             }
             else
             {
-                _enemyHealth.SetText(playerState.ComponentHealth.Health.ToString());
+                _enemyHealth.SetText(playerState.Health.Value.ToString());
                 _enemyName.SetText(playerState.PlayerName.ToString());
             }
         }

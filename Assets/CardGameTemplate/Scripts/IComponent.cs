@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class IComponent : MonoBehaviour
+public interface IComponent
 {
     
 }

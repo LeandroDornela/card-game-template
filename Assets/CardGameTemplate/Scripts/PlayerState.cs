@@ -24,8 +24,7 @@ namespace CardGameTemplate
         private string _playerName;
 
         // Components
-        // TODO: maybe is interesting to store components in a dictionary.
-        private ComponentHealth _health;
+        private Dictionary<PlayerComponent, IComponent> _components;
 
         [Header("Cards sets")]
         [SerializeField] private CardSetController _deckCards;
@@ -40,7 +39,7 @@ namespace CardGameTemplate
         public Guid RuntimePlayerGuid => _runtimeGuid;
         public string PlayerName => _playerName;
 
-        public ComponentHealth ComponentHealth => _health;
+        public PlayerFloatComponent Health => (PlayerFloatComponent)_components[PlayerComponent.Health];
 
         public CardSetController DeckCards => _deckCards;
         public CardSetController HandCards => _handCards;
@@ -54,7 +53,7 @@ namespace CardGameTemplate
         ///
         /// This method:<br/>
         /// - Stores the player's runtime Guid and display name.<br/>
-        /// - Adds and initializes the <see cref="ComponentHealth"/> component.<br/>
+        /// - Adds and initializes the <see cref="Health"/> component.<br/>
         /// - Creates the four managed card sets (deck, hand, in-game, discarded).<br/>
         /// - Emits a debug log confirming initialization.<br/>
         ///
@@ -67,9 +66,20 @@ namespace CardGameTemplate
             _runtimeGuid = runtimeGuid;
             _playerName = playerName;
 
+            // Create health component.
+            PlayerFloatComponent newCompHealth = new PlayerFloatComponent(_runtimeGuid, 1000, 0, 1000);
+            newCompHealth.OnValueChanged.AddListener(OnPlayerHealthChanged);
+            newCompHealth.OnValueIsMin.AddListener(OnPlayerHealthIsZero);
+
+            // Create mana component.
+            PlayerFloatComponent newCompMana = new PlayerFloatComponent(_runtimeGuid, 1000, 0, 1000);
+
             // Add and initialize the components.
-            _health = gameObject.AddComponent<ComponentHealth>();
-            _health.Initialize(_runtimeGuid, 100, 100);
+            _components = new Dictionary<PlayerComponent, IComponent>
+            {
+                {PlayerComponent.Health, newCompHealth},
+                {PlayerComponent.Mana, newCompMana}
+            };
 
             // Initialize the card sets.
             _deckCards = new CardSetController(nameof(_deckCards));
@@ -78,6 +88,18 @@ namespace CardGameTemplate
             _discardedCards = new CardSetController(nameof(_discardedCards));
 
             Debug.Log(Debug.Category.GameLogic, $"{runtimeGuid} {GetType()} initialized.");
+        }
+
+
+        void OnPlayerHealthChanged(Guid ownerGuid, float oldValue, float newValue)
+        {
+            GameEvents.OnPlayerHealthChanged.Trigger(ownerGuid, newValue);
+        }
+
+
+        void OnPlayerHealthIsZero(Guid ownerGuid, float oldValue, float newValue)
+        {
+            GameEvents.OnPlayerHealthIsZero.Trigger(ownerGuid);
         }
 
 #if UNITY_EDITOR && DEBUG_GIZMOS

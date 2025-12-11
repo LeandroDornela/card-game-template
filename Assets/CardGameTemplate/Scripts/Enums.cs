@@ -13,6 +13,12 @@ namespace CardGameTemplate
         LocalAI
     }
 
+    public enum PlayerComponent
+    {
+        Health,
+        Mana
+    }
+
     public enum TargetType
     {
         OwnerPlayer,
