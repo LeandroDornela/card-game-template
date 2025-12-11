@@ -1,11 +1,8 @@
-using UnityEngine;
 
 namespace CardGameTemplate
 {
-    [System.Serializable]
-    public abstract class ICardGameDataManager
+    public interface ICardGameDataManager
     {
-        protected ICardGameMatchData _cardGameMatchData;
-        public abstract ICardGameMatchData GetCardGameMatchData();
+        ICardGameMatchData GetCardGameMatchData();
     }
 }

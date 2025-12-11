@@ -12,8 +12,6 @@ namespace CardGameTemplate
     {
         private CardGameManager _cardGameManager;
 
-
-        private int _handSlots = 5;
         private bool _decksInitialized = false;
 
 
@@ -276,7 +274,7 @@ namespace CardGameTemplate
         bool TryFillHand(PlayerState playerState)
         {
             // Get the number of card to draw to avoid using a while loop.
-            int cardsToDraw = _handSlots - playerState.HandCards.Count;
+            int cardsToDraw = _cardGameManager.HandSlots - playerState.HandCards.Count;
 
             for(int i = 0; i < cardsToDraw; i++)
             {
@@ -289,7 +287,7 @@ namespace CardGameTemplate
                 }
             }
 
-            return playerState.HandCards.Count == _handSlots;
+            return playerState.HandCards.Count == _cardGameManager.HandSlots;
         }
 
 
@@ -304,7 +302,7 @@ namespace CardGameTemplate
             }
 
             // Also check if the hand is full.
-            if(playerState.HandCards.Count >= _handSlots)
+            if(playerState.HandCards.Count >= _cardGameManager.HandSlots)
             {
                 CardGameTemplate.Debug.Log(Debug.Category.GameLogic, $"{playerState.PlayerName} can't add card from deck to hand. Hand is full.");
                 return false;

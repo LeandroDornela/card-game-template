@@ -172,7 +172,7 @@ namespace CardGameTemplate
             }
 
             // Check if card is already at the set.
-            if(_cards.TryGetValue(cardGuid, out CardType dummy))
+            if(_cards.TryGetValue(cardGuid, out _))
             {
                 CardGameTemplate.Debug.LogError(Debug.Category.Data, $"{_setName}: Card with id [{cardGuid}] is already in the set.");
                 return false;
