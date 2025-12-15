@@ -19,6 +19,14 @@ namespace CardGameTemplate
         Mana
     }
 
+    public enum CardSetId
+    {
+        Deck,
+        Hand,
+        InGame,
+        Discarded
+    }
+
     public enum TargetType
     {
         OwnerPlayer,

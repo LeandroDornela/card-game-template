@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using NaughtyAttributes;
 using UnityEngine;
 
 namespace CardGameTemplate
@@ -23,7 +22,7 @@ namespace CardGameTemplate
     /// </summary>
     public class CardGameManager : Singleton<CardGameManager> // World
     {
-        [SerializeField, Expandable] private CardGameConfig _cardGameConfig;
+        [SerializeField] private CardGameConfig _cardGameConfig;
         
         private GameStateMachine _stateMachine;
         private CardGameController _cardGameController;
@@ -37,14 +36,13 @@ namespace CardGameTemplate
         private int _handSlots = 5;
 
 
+#region ==================== Public Parameters and Access Methods ====================
+
         public CardGameController CardGameController => _cardGameController;
         public MatchState MatchState => _matchState;
-
-        
         public IReadOnlyDictionary<Guid, RuntimePlayerProfile> PlayerProfiles => _playerProfiles;
         public IReadOnlyDictionary<Guid, Controller> PlayerControllers => _controllers;
         public IReadOnlyDictionary<Guid, PlayerState> PlayerStates => _states;
-
         public int HandSlots => _handSlots;
 
         public bool TryGetPlayerProfile(Guid guid, out RuntimePlayerProfile profile)
@@ -72,13 +70,9 @@ namespace CardGameTemplate
             return _stateMachine.CurrentState;
         }
 
-
         /// <summary>
         /// Try get all Player States that Runtime Guid don't match with the give Guid.
         /// </summary>
-        /// <param name="guid"></param>
-        /// <param name="playerStates"></param>
-        /// <returns></returns>
         public bool TryGetPlayerStatesNotGuid(Guid guid, out PlayerState[] playerStates)
         {
             playerStates = _states.Where(kvp => kvp.Key != guid).Select(kvp => kvp.Value).ToArray();
@@ -93,7 +87,11 @@ namespace CardGameTemplate
                 return false;
             }
         }
-        
+
+#endregion
+
+
+#region ==================== MonoBehaviour Callbacks ====================
 
         void Awake()
         {
@@ -133,23 +131,10 @@ namespace CardGameTemplate
             _stateMachine.Update();
         }
 
+#endregion
 
-        public async void SetupPlayersContext(Action onFinished)
-        {
-            // Get match data.
-            var matchData = _cardGameConfig.CardGameDataManager.GetCardGameMatchData();
-            
-#if SIMULATE_NETWORK_DELAY
-            // Simulate a network delay
-            await Task.Delay(5000);
-#endif
 
-            // Setup the match players.
-            SetupPlayers(matchData.RuntimePlayerProfiles);
-
-            onFinished.Invoke();
-        }
-
+#region ==================== Private Methods ====================
 
         /// <summary>
         /// By default the local player is the first on the profiles.
@@ -211,19 +196,37 @@ namespace CardGameTemplate
             _playerProfiles.Add(playerProfile.RuntimePlayerGuid, playerProfile);
 
             // Create and add the new PLAYER STATE to the states dictionary.
-            GameObject newPlayerStateGO = new GameObject($"PlayerState_{playerProfile.PlayerName}_{playerProfile.RuntimePlayerGuid}");
-            newPlayerStateGO.transform.parent = transform;
-            PlayerState newPlayerState = newPlayerStateGO.AddComponent<PlayerState>();
-            newPlayerState.Initialize(playerProfile.RuntimePlayerGuid, playerProfile.PlayerName);
+            PlayerState newPlayerState = new PlayerState(playerProfile.RuntimePlayerGuid, playerProfile.PlayerName, playerProfile.DefaultComponentsStats);
             _states.Add(playerProfile.RuntimePlayerGuid, newPlayerState);
     
             // After creation, initialize and add the new CONTROLLER to the dictionary.
             newController.Initialize(playerProfile.RuntimePlayerGuid);
             _controllers.Add(playerProfile.RuntimePlayerGuid, newController);
 
-
             // Trigger the new player signal.
             GameEvents.OnNewPlayerAdded.Trigger(newPlayerState);
         }
+#endregion
+
+
+#region ==================== Public Methods ====================
+
+        public async void SetupMatch(Action onFinished)
+        {
+            // Get match data.
+            var matchData = _cardGameConfig.CardGameDataManager.GetCardGameMatchData();
+            
+#if SIMULATE_NETWORK_DELAY
+            // Simulate a network delay
+            await Task.Delay(5000);
+#endif
+
+            // Setup the match players.
+            SetupPlayers(matchData.RuntimePlayerProfiles);
+
+            onFinished.Invoke();
+        }
+
+#endregion
     }
 }
