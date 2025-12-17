@@ -21,10 +21,6 @@ namespace CardGameTemplate
         
 
 #region ==================== Private Methods ====================
-        bool IsInValidGameState()
-        {
-            return _cardGameManager.IsInGame();
-        }
 
 
         List<IBehaviourTargetWrapper> GetBehaviourTargets(PlayerState ownerPlayerState, CardBehaviour cardBehaviour, Guid targetGuid = default)
@@ -237,12 +233,6 @@ namespace CardGameTemplate
 
         public void TryFillPlayersHands()
         {
-            if(!IsInValidGameState())
-            {
-                Debug.LogError(Debug.Category.GameLogic, "Can't perform this action outside a valid game state.");
-                return;
-            }
-
             if(!_decksInitialized)
             {
                 Debug.LogError(Debug.Category.Data, $"Decks are not initialized. Use {nameof(FillPlayersDecks)} to add the cards from player profile.");
@@ -258,12 +248,6 @@ namespace CardGameTemplate
         
         public bool TryDrawACard(Guid playerStateGuid)
         {
-            if(!IsInValidGameState())
-            {
-                Debug.LogError(Debug.Category.GameLogic, "Can't perform this action outside a valid game state.");
-                return false;
-            }
-
             if(_cardGameManager.TryGetPlayerState(playerStateGuid, out PlayerState playerState))
             {
                 return TryDrawACard(playerState);
@@ -277,12 +261,6 @@ namespace CardGameTemplate
 
         public bool TryUseCard(Guid cardOwnerGuid, Guid runtimeCardGuid, Guid targetGuid = default)
         {
-            if(!IsInValidGameState())
-            {
-                Debug.LogError(Debug.Category.GameLogic, "Can't perform this action outside a valid game state.");
-                return false;
-            }
-
             // Get owner player state.
             if(!_cardGameManager.TryGetPlayerState(cardOwnerGuid, out PlayerState ownerPlayerState))
             {
@@ -306,12 +284,6 @@ namespace CardGameTemplate
 
         public bool TryUseCard(PlayerState ownerPlayerState, RuntimeCardDefinition cardToUseDefinition, Guid targetGuid = default)
         {
-            if(!IsInValidGameState())
-            {
-                Debug.LogError(Debug.Category.GameLogic, "Can't perform this action outside a valid game state.");
-                return false;
-            }
-
             // Try apply each effect to each target.
             foreach(CardBehaviour behaviour in cardToUseDefinition.Effects)
             {

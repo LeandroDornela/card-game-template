@@ -26,6 +26,7 @@ namespace CardGameTemplate
     {
         public static Signal<PlayerState> OnNewPlayerAdded = new();
         public static Signal<float> OnMatchTimerUpdate = new();
+        public static Signal<IGameAction> OnGameActionRequest = new(); // Generic Action request.
 
         //
         // INPUT

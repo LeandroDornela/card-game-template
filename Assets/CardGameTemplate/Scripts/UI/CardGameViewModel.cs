@@ -124,11 +124,13 @@ namespace CardGameTemplate
         }
 
 
+        [Obsolete]
         public void TEMP_DrawCard()
         {
-            CardGameManager.Instance.CardGameController.TryDrawACard(_ownerController.RuntimePlayerGuid);
+            GameEvents.OnGameActionRequest.Trigger(new ActionDrawCard(_ownerController.RuntimePlayerGuid));
         }
 
+        [Obsolete]
         public void TEMP_Pause()
         {
             GameEvents.OnKeyPressed_Pause.Trigger();

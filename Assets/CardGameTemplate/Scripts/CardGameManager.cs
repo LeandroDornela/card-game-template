@@ -101,6 +101,9 @@ namespace CardGameTemplate
                 return;
             }
 
+            _cardGameController = new CardGameController(this);
+            _matchState = new MatchState();
+
             // Create the state machine, what will trigger the Initializing state by default.
             _stateMachine = new GameStateMachine(new Dictionary<InGameStateId, IGameState>
             {
@@ -109,10 +112,6 @@ namespace CardGameTemplate
                 { InGameStateId.Paused,new StatePaused(this)},
                 { InGameStateId.GameOver,new StateGameOver(this)}
             });
-
-            _cardGameController = new CardGameController(this);
-
-            _matchState = new MatchState();
 
             _stateMachine.StartMachine(InGameStateId.Initializing);
 

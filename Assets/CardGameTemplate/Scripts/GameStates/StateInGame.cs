@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace CardGameTemplate
 {
     /// <summary>
@@ -11,6 +14,7 @@ namespace CardGameTemplate
     public class StateInGame : IGameState
     {
         private CardGameManager _cardGameManager;
+        private ActionHandlersManager _actionHandlersManager = new();
         private bool _pauseKeyPressed = false;
 
         public InGameStateId StateId => InGameStateId.InGame;
@@ -19,6 +23,9 @@ namespace CardGameTemplate
         public StateInGame(CardGameManager cardGameManager)
         {
             _cardGameManager = cardGameManager;
+
+            _actionHandlersManager.Add(new ActionHandlerDrawCard(_cardGameManager.CardGameController));
+            _actionHandlersManager.Add(new ActionHandlerUseCard(_cardGameManager.CardGameController));
         }
 
 
@@ -30,6 +37,7 @@ namespace CardGameTemplate
 
             // Listen to a pause game input.
             GameEvents.OnKeyPressed_Pause.AddListener(HandleInput);
+            GameEvents.OnGameActionRequest.AddListener(_actionHandlersManager.HandleActionRequest);
 
             // Is first time entering in game.
             // TODO: this could be a new state between initialization and in game.
@@ -64,6 +72,7 @@ namespace CardGameTemplate
 
             // Remember always remove listeners.
             GameEvents.OnKeyPressed_Pause.RemoveListener(HandleInput);
+            GameEvents.OnGameActionRequest.RemoveListener(_actionHandlersManager.HandleActionRequest);
 
             GameEvents.OnExitState_InGame.Trigger();
         }

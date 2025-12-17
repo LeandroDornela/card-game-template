@@ -53,16 +53,19 @@ namespace CardGameTemplate
             
         }
 
+        [Obsolete]
         public void TEST_Use()
         {
-            CardGameManager.Instance.CardGameController.TryUseCard(_ownerGuid, _cardGuid);
+            GameEvents.OnGameActionRequest.Trigger(new ActionUseCard(_ownerGuid, _cardGuid));
         }
 
+        [Obsolete]
         public void TEST_Deck()
         {
             
         }
 
+        [Obsolete]
         public void TEST_Discard()
         {
             
