@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace CardGameTemplate
@@ -25,24 +26,26 @@ namespace CardGameTemplate
     /// - Behaviours should remain self-contained and should not manage<br/>
     ///   external game systems beyond applying their intended effects.<br/>
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public abstract class CardBehaviour
     {
+        protected Guid _runtimeCardGuid;
         protected string _behaviourName;
         protected float _mainValue;
         protected TargetType _targetType;
 
+        public Guid RuntimeCardGuid { get { return _runtimeCardGuid; }  set { _runtimeCardGuid = value; } }
         public string Name => _behaviourName;
         public float MainValue => _mainValue;
         public TargetType TargetType => _targetType;
 
         public CardBehaviour(string behaviourName, float mainValue, TargetType targetType)
         {
-            _behaviourName = behaviourName;
+            _behaviourName = behaviourName ?? throw new ArgumentNullException(nameof(behaviourName));
             _mainValue = mainValue;
             _targetType = targetType;
         }
 
-        public abstract bool TryActivateBehaviour(PlayerState owner, List<IBehaviourTarget> possibleTargetsToApply);
+        public abstract bool TryActivateBehaviour(PlayerState owner, List<IBehaviourTarget> possibleTargets);
     }
 }

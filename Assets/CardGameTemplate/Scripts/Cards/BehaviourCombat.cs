@@ -12,7 +12,7 @@ namespace CardGameTemplate
         }
 
         // The combat behaviour is between cards. Defferent from damage heath who damages the player not the player cards.
-        public override bool TryActivateBehaviour(PlayerState owner, List<IBehaviourTarget> objectToApply)
+        public override bool TryActivateBehaviour(PlayerState owner, List<IBehaviourTarget> possibleTargets)
         {
             throw new NotImplementedException();
         }

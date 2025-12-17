@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace CardGameTemplate
@@ -6,23 +7,22 @@ namespace CardGameTemplate
     {
         public BehaviourDamageHealth(string behaviourName, float damage, TargetType targetType) : base(behaviourName, damage, targetType){}
 
-        public override bool TryActivateBehaviour(PlayerState owner, List<IBehaviourTarget> possibleTargetsToApply)
+        public override bool TryActivateBehaviour(PlayerState owner, List<IBehaviourTarget> possibleTargets)
         {
             Debug.Log(Debug.Category.GameLogic, $"Trying to apply effect {GetType()}.");
 
-            if(possibleTargetsToApply == null)
+            if(possibleTargets == null)
             {
-                Debug.LogError(Debug.Category.Data, $"{nameof(possibleTargetsToApply)} is null.");
+                Debug.LogError(Debug.Category.Data, $"{nameof(possibleTargets)} is null.");
                 return false;
             }
 
             bool success = false;
 
-            foreach(IBehaviourTarget targetWrapper in possibleTargetsToApply)
+            foreach(IBehaviourTarget target in possibleTargets)
             {
-                //PlayerState playerState = targetWrapper.GetTarget<PlayerState>();
-                PlayerState playerState = targetWrapper as PlayerState;
-
+                // Try to cast and check the result.
+                PlayerState playerState = target as PlayerState;
                 if(playerState == null)
                 {
                     // It's expected to only receive targets that will be used by the effect.

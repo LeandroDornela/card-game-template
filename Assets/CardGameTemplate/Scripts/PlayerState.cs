@@ -68,7 +68,7 @@ namespace CardGameTemplate
         public PlayerState(Guid runtimeGuid, string playerName, PlayerComponentsData defaultComponentsStats)
         {
             _runtimeGuid = runtimeGuid;
-            _playerName = playerName;
+            _playerName = playerName ?? throw new ArgumentNullException(nameof(playerName));
 
             // Create health component and register to value change events.
             PlayerFloatComponent newCompHealth = new PlayerFloatComponent

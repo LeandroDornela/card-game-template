@@ -8,13 +8,13 @@ namespace CardGameTemplate
         private Guid _runtimeCardGuid;
         [SerializeField] private string _cardName;
         [SerializeField] private string _description;
-        [SerializeField] private CardBehaviour[] _effects;
+        [SerializeField] private CardBehaviour[] _behaviours;
         
 
         public Guid RuntimeCardGuid => _runtimeCardGuid;
         public string CardName => _cardName;
         public string Description => _description;
-        public CardBehaviour[] Effects => _effects;
+        public CardBehaviour[] Behaviours => _behaviours;
 
 
         public RuntimeCardDefinition(string cardName, string description, CardBehaviour[] cardEffects)
@@ -23,7 +23,12 @@ namespace CardGameTemplate
 
             _cardName = cardName ?? throw new ArgumentNullException(nameof(cardName));
             _description = description ?? throw new ArgumentNullException(nameof(description));
-            _effects = cardEffects ?? throw new ArgumentNullException(nameof(cardEffects));
+            _behaviours = cardEffects ?? throw new ArgumentNullException(nameof(cardEffects));
+
+            foreach(var behaviour in _behaviours)
+            {
+                behaviour.RuntimeCardGuid = _runtimeCardGuid;
+            }
 
             Debug.Log(Debug.Category.Data, $"{GetType()} created with Guid: {_runtimeCardGuid}");
         }

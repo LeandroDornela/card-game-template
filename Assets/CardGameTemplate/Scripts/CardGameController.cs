@@ -11,73 +11,22 @@ namespace CardGameTemplate
     public class CardGameController
     {
         private CardGameManager _cardGameManager;
+        private Dictionary<TargetType, IBehaviourTargetsHandler> _behaviourTargetsHandlers;
         private bool _decksInitialized = false;
 
 
         public CardGameController(CardGameManager cardGameManager)
         {
             _cardGameManager = cardGameManager;
+            _behaviourTargetsHandlers = new Dictionary<TargetType, IBehaviourTargetsHandler>
+            {
+                { TargetType.OwnerPlayer, new TargetHandlerOwnerPlayer() },
+                { TargetType.EnemyPlayers, new TargetHandlerEnemyPlayers(_cardGameManager) }
+            };
         }
         
 
 #region ==================== Private Methods ====================
-
-
-        List<IBehaviourTarget> GetBehaviourTargets(PlayerState ownerPlayerState, CardBehaviour cardBehaviour, Guid targetGuid = default)
-        {
-            List<IBehaviourTarget> targets = new();
-
-            switch(cardBehaviour.TargetType)
-            {
-                case TargetType.OwnerPlayer:
-                    if(targetGuid != default && targetGuid != ownerPlayerState.RuntimePlayerGuid)
-                    {
-                        Debug.LogError(Debug.Category.Data, $"Card effect is the card owner but given target Guid don't match owner Guid.");
-                        return targets;
-                    }
-                    else
-                    {
-                        targets.Add(ownerPlayerState);
-                        return targets;
-                    }
-                case TargetType.EnemyPlayers:
-                    // If Guid defined apply to one, else apply to all enemies.
-                    if(targetGuid != default)
-                    {
-                        if(targetGuid == ownerPlayerState.RuntimePlayerGuid)
-                        {
-                            Debug.LogError(Debug.Category.Data, $"Card effect target is defined to be a enemy but the target Guid identify the card owner player.");
-                            return targets;
-                        }
-
-                        // If have a target guid, find and add the player.
-                        if(_cardGameManager.TryGetPlayerState(targetGuid, out PlayerState targetPlayerState))
-                        {
-                            targets.Add(targetPlayerState);
-                            return targets;
-                        }
-                        else
-                        {
-                            Debug.LogError(Debug.Category.Data, $"Can't find player with Guid: {targetGuid}.");
-                            return targets;
-                        }
-                    }
-                    else // If don't have a definite target guid. Add all other players.
-                    {
-                        _cardGameManager.TryGetPlayerStatesNotGuid(ownerPlayerState.RuntimePlayerGuid, out var enemiesPlayerStates);
-
-                        foreach(PlayerState playerState in enemiesPlayerStates)
-                        {
-                            targets.Add(playerState);
-                        }
-
-                        return targets;
-                    }
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
 
         /// <summary>
         /// Try to add cards to all free slots in hand. The return result not necessarily indicate an error.
@@ -285,10 +234,24 @@ namespace CardGameTemplate
         public bool TryUseCard(PlayerState ownerPlayerState, RuntimeCardDefinition cardToUseDefinition, Guid targetGuid = default)
         {
             // Try apply each effect to each target.
-            foreach(CardBehaviour behaviour in cardToUseDefinition.Effects)
+            foreach(CardBehaviour behaviour in cardToUseDefinition.Behaviours)
             {
-                List<IBehaviourTarget> targets = GetBehaviourTargets(ownerPlayerState, behaviour, targetGuid);
+                // Get the behaviour targets handler for the behaviour target type.
+                if(!_behaviourTargetsHandlers.TryGetValue(behaviour.TargetType, out IBehaviourTargetsHandler targetsHandler))
+                {
+                    Debug.LogError(Debug.Category.Data, $"No targets handler found for target type {behaviour.TargetType}.");
+                    return false;
+                }
 
+                // Get the targets and check if valid.
+                List<IBehaviourTarget> targets = targetsHandler.GetBehaviourTargets(ownerPlayerState, behaviour, targetGuid);
+                if(targets == null ||targets.Count == 0)
+                {
+                    Debug.LogError(Debug.Category.GameLogic, $"No valid targets found for behaviour {behaviour.Name}.");
+                    return false;
+                }
+
+                // Try to activate the behaviour on the targets.
                 if(!behaviour.TryActivateBehaviour(ownerPlayerState, targets))
                 {
                     Debug.LogError(Debug.Category.GameLogic, $"Can't apply effect to targets.");

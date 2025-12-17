@@ -5,16 +5,12 @@ namespace CardGameTemplate
 {
     public class RuntimePlayerProfile
     {
-        private Guid _runtimePlayerGuid;
-        private string _playerName;
-        private PlayerType _playerType;
-        private PlayerComponentsData _defaultComponentsStats;
         private Dictionary<Guid, RuntimeCardDefinition> _deckCardDefinitions;
 
-        public Guid RuntimePlayerGuid => _runtimePlayerGuid;
-        public string PlayerName => _playerName;
-        public PlayerType PlayerType => _playerType;
-        public PlayerComponentsData DefaultComponentsStats => _defaultComponentsStats;
+        public Guid RuntimePlayerGuid {get; private set; }
+        public string PlayerName {get; private set; }
+        public PlayerType PlayerType {get; private set; }
+        public PlayerComponentsData DefaultComponentsStats {get; private set; }
         public IReadOnlyDictionary<Guid, RuntimeCardDefinition> DeckCardDefinitions => _deckCardDefinitions;
 
 
@@ -26,10 +22,10 @@ namespace CardGameTemplate
 
         private void Initialize(Guid runtimePlayerGuid, string playerName, PlayerType playerType, PlayerComponentsData defaultComponentsStats, RuntimeCardDefinition[] cardDefinitions)
         {
-            _runtimePlayerGuid = runtimePlayerGuid;
-            _playerType = playerType;
-            _playerName = playerName ?? throw new ArgumentNullException(nameof(playerName));
-            _defaultComponentsStats = defaultComponentsStats;
+            RuntimePlayerGuid = runtimePlayerGuid;
+            PlayerType = playerType;
+            PlayerName = playerName ?? throw new ArgumentNullException(nameof(playerName));
+            DefaultComponentsStats = defaultComponentsStats;
 
 
             // Create a RuntimeCardDefinition Dictionary from RuntimeCardDefinition array.
@@ -41,13 +37,13 @@ namespace CardGameTemplate
 
 
             // Just informs the king os Guid created.
-            if(_runtimePlayerGuid == default)
+            if(RuntimePlayerGuid == default)
             {
                 Debug.LogWarning(Debug.Category.Data, $"{GetType()} created with DEFAULT GUID.");
             }
             else
             {
-                Debug.Log(Debug.Category.Data, $"{GetType()} created with Guid: {_runtimePlayerGuid}");
+                Debug.Log(Debug.Category.Data, $"{GetType()} created with Guid: {RuntimePlayerGuid}");
             }
         }
     }

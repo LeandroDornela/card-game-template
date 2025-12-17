@@ -27,7 +27,7 @@ namespace CardGameTemplate
             _cardDescription.SetText(cardDefinition.Description);
             
             string effects = "";
-            foreach(var effect in cardDefinition.Effects)
+            foreach(var effect in cardDefinition.Behaviours)
             {
                 effects += $"{effect.Name}\n";
             }

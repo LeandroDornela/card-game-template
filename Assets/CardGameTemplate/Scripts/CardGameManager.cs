@@ -108,9 +108,9 @@ namespace CardGameTemplate
             _stateMachine = new GameStateMachine(new Dictionary<InGameStateId, IGameState>
             {
                 { InGameStateId.Initializing, new StateInitializing(this)},
-                { InGameStateId.InGame,new StateInGame(this)},
-                { InGameStateId.Paused,new StatePaused(this)},
-                { InGameStateId.GameOver,new StateGameOver(this)}
+                { InGameStateId.InGame, new StateInGame(this)},
+                { InGameStateId.Paused, new StatePaused(this)},
+                { InGameStateId.GameOver, new StateGameOver(this)}
             });
 
             _stateMachine.StartMachine(InGameStateId.Initializing);

@@ -18,7 +18,7 @@ namespace CardGameTemplate
 
         public ActionHandlerDrawCard(CardGameController cardGameController)
         {
-            _cardGameController = cardGameController;
+            _cardGameController = cardGameController ?? throw new ArgumentNullException(nameof(cardGameController));
         }
 
         public override void Execute(ActionDrawCard action)
