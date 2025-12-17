@@ -23,9 +23,9 @@ namespace CardGameTemplate
 #region ==================== Private Methods ====================
 
 
-        List<IBehaviourTargetWrapper> GetBehaviourTargets(PlayerState ownerPlayerState, CardBehaviour cardBehaviour, Guid targetGuid = default)
+        List<IBehaviourTarget> GetBehaviourTargets(PlayerState ownerPlayerState, CardBehaviour cardBehaviour, Guid targetGuid = default)
         {
-            List<IBehaviourTargetWrapper> targets = new List<IBehaviourTargetWrapper>();
+            List<IBehaviourTarget> targets = new();
 
             switch(cardBehaviour.TargetType)
             {
@@ -37,7 +37,7 @@ namespace CardGameTemplate
                     }
                     else
                     {
-                        targets.Add(new PlayerBehaviourTarget(ownerPlayerState));
+                        targets.Add(ownerPlayerState);
                         return targets;
                     }
                 case TargetType.EnemyPlayers:
@@ -53,7 +53,7 @@ namespace CardGameTemplate
                         // If have a target guid, find and add the player.
                         if(_cardGameManager.TryGetPlayerState(targetGuid, out PlayerState targetPlayerState))
                         {
-                            targets.Add(new PlayerBehaviourTarget(targetPlayerState));
+                            targets.Add(targetPlayerState);
                             return targets;
                         }
                         else
@@ -68,7 +68,7 @@ namespace CardGameTemplate
 
                         foreach(PlayerState playerState in enemiesPlayerStates)
                         {
-                            targets.Add(new PlayerBehaviourTarget(playerState));
+                            targets.Add(playerState);
                         }
 
                         return targets;
@@ -287,7 +287,7 @@ namespace CardGameTemplate
             // Try apply each effect to each target.
             foreach(CardBehaviour behaviour in cardToUseDefinition.Effects)
             {
-                List<IBehaviourTargetWrapper> targets = GetBehaviourTargets(ownerPlayerState, behaviour, targetGuid);
+                List<IBehaviourTarget> targets = GetBehaviourTargets(ownerPlayerState, behaviour, targetGuid);
 
                 if(!behaviour.TryActivateBehaviour(ownerPlayerState, targets))
                 {

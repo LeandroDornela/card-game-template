@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CardGameTemplate
 {
-    public class RuntimeCardDefinition
+    public class RuntimeCardDefinition : IBehaviourTarget
     {
         private Guid _runtimeCardGuid;
         [SerializeField] private string _cardName;

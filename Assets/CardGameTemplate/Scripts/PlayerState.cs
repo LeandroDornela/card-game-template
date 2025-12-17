@@ -11,7 +11,7 @@ namespace CardGameTemplate
     /// four managed card sets (deck, hand, in-game, discarded). It provides access to
     /// these systems and maintains a unique runtime Guid for identifying the player.
     /// </summary>
-    public class PlayerState
+    public class PlayerState : IBehaviourTarget
     {
         private Guid _runtimeGuid;
         private string _playerName;

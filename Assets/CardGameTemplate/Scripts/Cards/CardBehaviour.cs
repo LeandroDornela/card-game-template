@@ -43,6 +43,6 @@ namespace CardGameTemplate
             _targetType = targetType;
         }
 
-        public abstract bool TryActivateBehaviour(PlayerState owner, List<IBehaviourTargetWrapper> possibleTargetsToApply);
+        public abstract bool TryActivateBehaviour(PlayerState owner, List<IBehaviourTarget> possibleTargetsToApply);
     }
 }

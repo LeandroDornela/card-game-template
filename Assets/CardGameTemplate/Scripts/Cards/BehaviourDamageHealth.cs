@@ -6,7 +6,7 @@ namespace CardGameTemplate
     {
         public BehaviourDamageHealth(string behaviourName, float damage, TargetType targetType) : base(behaviourName, damage, targetType){}
 
-        public override bool TryActivateBehaviour(PlayerState owner, List<IBehaviourTargetWrapper> possibleTargetsToApply)
+        public override bool TryActivateBehaviour(PlayerState owner, List<IBehaviourTarget> possibleTargetsToApply)
         {
             Debug.Log(Debug.Category.GameLogic, $"Trying to apply effect {GetType()}.");
 
@@ -18,9 +18,10 @@ namespace CardGameTemplate
 
             bool success = false;
 
-            foreach(IBehaviourTargetWrapper targetWrapper in possibleTargetsToApply)
+            foreach(IBehaviourTarget targetWrapper in possibleTargetsToApply)
             {
-                PlayerState playerState = targetWrapper.GetSubTargetsHolder<PlayerState>();
+                //PlayerState playerState = targetWrapper.GetTarget<PlayerState>();
+                PlayerState playerState = targetWrapper as PlayerState;
 
                 if(playerState == null)
                 {
