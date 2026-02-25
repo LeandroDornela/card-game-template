@@ -1,7 +1,5 @@
 # Card Game Template
-
----
-# Preview Doc
+Documentation Preview: just tested how Claude can help with doc generation.
 ---
 ## Table of Contents
 1. [Executive Summary](#executive-summary)
